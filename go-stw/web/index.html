@@ -1,0 +1,1897 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>STW_TeacherCheck - ระบบสรุปเวลาสแกนนิ้วเข้างาน</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Prompt:wght@300;400;500;600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #0f172a;
+      --card-bg: rgba(30, 41, 59, 0.7);
+      --card-border: rgba(255, 255, 255, 0.08);
+      --text-main: #f8fafc;
+      --text-muted: #94a3b8;
+      --primary: #06c755;
+      --primary-hover: #05b34c;
+      --primary-glow: rgba(6, 199, 85, 0.25);
+      --danger: #ef4444;
+      --danger-hover: #dc2626;
+      --accent: #38bdf8;
+      --warning: #f59e0b;
+      --radius: 14px;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: 'Prompt', 'Inter', -apple-system, sans-serif;
+      background: radial-gradient(circle at 15% 15%, #1e1b4b 0%, #0f172a 50%, #030712 100%);
+      color: var(--text-main);
+      min-height: 100vh;
+      padding: 24px 16px;
+      line-height: 1.5;
+    }
+
+    .container { max-width: 1040px; margin: 0 auto; }
+
+    #loginSection {
+      display: none;
+      min-height: 80vh;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .login-card {
+      width: 100%;
+      max-width: 400px;
+      background: var(--card-bg);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      border: 1px solid var(--card-border);
+      border-radius: var(--radius);
+      padding: 32px 28px;
+      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.5);
+      text-align: center;
+    }
+
+    .login-icon {
+      width: 56px;
+      height: 56px;
+      background: linear-gradient(135deg, #06c755 0%, #009944 100%);
+      border-radius: 16px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: 16px;
+      box-shadow: 0 10px 20px var(--primary-glow);
+    }
+
+    .login-icon svg { width: 32px; height: 32px; fill: #ffffff; }
+
+    header {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-between;
+      align-items: center;
+      gap: 16px;
+      padding-bottom: 24px;
+      margin-bottom: 24px;
+      border-bottom: 1px solid var(--card-border);
+    }
+
+    .brand { display: flex; align-items: center; gap: 12px; }
+
+    .logo-icon {
+      width: 44px;
+      height: 44px;
+      background: linear-gradient(135deg, #06c755 0%, #009944 100%);
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 8px 16px var(--primary-glow);
+    }
+
+    .logo-icon svg { width: 26px; height: 26px; fill: #ffffff; }
+    h1 { font-size: 1.35rem; font-weight: 600; letter-spacing: -0.02em; }
+    .subtitle { font-size: 0.85rem; color: var(--text-muted); }
+
+    .header-actions { display: flex; gap: 10px; align-items: center; }
+
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      font-family: inherit;
+      font-size: 0.875rem;
+      font-weight: 500;
+      padding: 8px 16px;
+      border-radius: 8px;
+      border: none;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+
+    .btn-primary {
+      background: var(--primary);
+      color: #ffffff;
+      box-shadow: 0 4px 12px var(--primary-glow);
+    }
+
+    .btn-primary:hover { background: var(--primary-hover); transform: translateY(-1px); }
+
+    .btn-outline {
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid var(--card-border);
+      color: var(--text-main);
+    }
+
+    .btn-outline:hover { background: rgba(255, 255, 255, 0.1); }
+
+    .btn-success-soft {
+      background: rgba(6, 199, 85, 0.15);
+      color: #4ade80;
+      border: 1px solid rgba(6, 199, 85, 0.3);
+    }
+    .btn-success-soft:hover {
+      background: var(--primary);
+      color: white;
+    }
+
+    .btn-danger {
+      background: rgba(239, 68, 68, 0.15);
+      color: #fca5a5;
+      border: 1px solid rgba(239, 68, 68, 0.3);
+    }
+
+    .btn-danger:hover { background: var(--danger); color: white; }
+    .btn-sm { padding: 5px 10px; font-size: 0.775rem; border-radius: 6px; }
+
+    .grid-stats {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 16px;
+      margin-bottom: 24px;
+    }
+
+    .card {
+      background: var(--card-bg);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      border: 1px solid var(--card-border);
+      border-radius: var(--radius);
+      padding: 20px;
+      box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.3);
+    }
+
+    .card-title {
+      font-size: 0.85rem;
+      color: var(--text-muted);
+      font-weight: 400;
+      margin-bottom: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .stat-val { font-size: 1.5rem; font-weight: 700; color: var(--text-main); }
+    .stat-val span { font-size: 0.9rem; font-weight: 400; color: var(--text-muted); margin-left: 4px; }
+
+    .badge-chip {
+      display: inline-block;
+      font-size: 0.75rem;
+      padding: 3px 8px;
+      border-radius: 9999px;
+      background: rgba(56, 189, 248, 0.15);
+      color: var(--accent);
+      border: 1px solid rgba(56, 189, 248, 0.3);
+      font-weight: 500;
+    }
+
+    .badge-chip.green {
+      background: rgba(6, 199, 85, 0.15);
+      color: #4ade80;
+      border-color: rgba(6, 199, 85, 0.3);
+    }
+
+    .form-group { margin-bottom: 16px; text-align: left; }
+    .form-label { display: block; font-size: 0.875rem; font-weight: 500; margin-bottom: 6px; color: var(--text-main); }
+    .form-input {
+      width: 100%;
+      background: rgba(15, 23, 42, 0.6);
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      border-radius: 8px;
+      padding: 10px 14px;
+      color: #ffffff;
+      font-family: inherit;
+      font-size: 0.9rem;
+      transition: border-color 0.2s;
+    }
+
+    .form-input:focus {
+      outline: none;
+      border-color: var(--primary);
+      box-shadow: 0 0 0 3px var(--primary-glow);
+    }
+
+    .form-hint { font-size: 0.775rem; color: var(--text-muted); margin-top: 4px; }
+
+    /* Recipient & Discovered Items */
+    .recipient-item {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      padding: 12px 14px;
+      background: rgba(15, 23, 42, 0.5);
+      border: 1px solid var(--card-border);
+      border-radius: 10px;
+      margin-bottom: 10px;
+      transition: background 0.15s ease;
+    }
+
+    .recipient-item:hover { background: rgba(30, 41, 59, 0.9); }
+
+    .rec-info {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      min-width: 0;
+    }
+
+    .avatar {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      background: #334155;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.1rem;
+      flex-shrink: 0;
+      overflow: hidden;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    .avatar img { width: 100%; height: 100%; object-fit: cover; }
+
+    .rec-texts { display: flex; flex-direction: column; gap: 2px; min-width: 0; }
+
+    .rec-name {
+      font-weight: 600;
+      font-size: 0.925rem;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .rec-id {
+      font-family: 'Courier New', monospace;
+      font-size: 0.75rem;
+      color: var(--accent);
+      background: rgba(56, 189, 248, 0.1);
+      padding: 2px 6px;
+      border-radius: 4px;
+      width: fit-content;
+      cursor: pointer;
+    }
+
+    .rec-actions { display: flex; align-items: center; gap: 8px; flex-shrink: 0; }
+
+    .switch {
+      position: relative;
+      display: inline-block;
+      width: 40px;
+      height: 22px;
+    }
+
+    .switch input { opacity: 0; width: 0; height: 0; }
+
+    .slider {
+      position: absolute;
+      cursor: pointer;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background-color: rgba(255, 255, 255, 0.15);
+      transition: 0.3s;
+      border-radius: 22px;
+    }
+
+    .slider:before {
+      position: absolute;
+      content: "";
+      height: 16px;
+      width: 16px;
+      left: 3px;
+      bottom: 3px;
+      background-color: white;
+      transition: 0.3s;
+      border-radius: 50%;
+    }
+
+    input:checked + .slider { background-color: var(--primary); }
+    input:checked + .slider:before { transform: translateX(18px); }
+
+    .preview-box {
+      background: rgba(15, 23, 42, 0.8);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      border-radius: 10px;
+      padding: 16px;
+      font-size: 0.875rem;
+      white-space: pre-wrap;
+      color: #e2e8f0;
+      max-height: 300px;
+      overflow-y: auto;
+      font-family: 'Prompt', sans-serif;
+    }
+
+    #toast {
+      position: fixed;
+      bottom: 24px;
+      right: 24px;
+      background: #1e293b;
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      color: white;
+      padding: 12px 20px;
+      border-radius: 8px;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+      display: none;
+      align-items: center;
+      gap: 10px;
+      z-index: 9999;
+      font-size: 0.875rem;
+      animation: slideUp 0.3s ease;
+    }
+
+    #toast.success { border-left: 4px solid var(--primary); }
+    #toast.error { border-left: 4px solid var(--danger); }
+
+    @keyframes slideUp {
+      from { transform: translateY(20px); opacity: 0; }
+      to { transform: translateY(0); opacity: 1; }
+    }
+
+    .empty-state {
+      text-align: center;
+      padding: 24px 16px;
+      color: var(--text-muted);
+      font-size: 0.85rem;
+    }
+
+    .help-box {
+      margin-top: 14px;
+      padding: 12px 14px;
+      background: rgba(56, 189, 248, 0.05);
+      border: 1px dashed rgba(56, 189, 248, 0.25);
+      border-radius: 8px;
+      font-size: 0.8rem;
+      color: #cbd5e1;
+    }
+
+    .tag-new {
+      background: rgba(245, 158, 11, 0.15);
+      color: #fbbf24;
+      border: 1px solid rgba(245, 158, 11, 0.3);
+      font-size: 0.7rem;
+      padding: 1px 6px;
+      border-radius: 4px;
+      margin-left: 6px;
+    }
+
+    /* Modal Backdrop */
+    .modal-backdrop {
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.75);
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
+      z-index: 1000;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 16px;
+    }
+    .modal-card {
+      background: #1e293b;
+      border: 1px solid var(--card-border);
+      border-radius: var(--radius);
+      max-width: 620px;
+      width: 100%;
+      max-height: 90vh;
+      overflow-y: auto;
+      padding: 24px;
+      box-shadow: 0 25px 50px rgba(0,0,0,0.5);
+    }
+
+    /* Log Box */
+    .log-terminal {
+      background: #020617;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 8px;
+      padding: 12px;
+      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+      font-size: 0.8rem;
+      color: #94a3b8;
+      height: 260px;
+      overflow-y: auto;
+      white-space: pre-wrap;
+      word-break: break-all;
+    }
+    .log-line { margin-bottom: 4px; padding: 2px 4px; border-radius: 3px; }
+    .log-line.error { color: #f87171; background: rgba(239, 68, 68, 0.12); font-weight: 600; }
+    .log-line.warning { color: #fbbf24; background: rgba(245, 158, 11, 0.1); }
+    .log-line.info { color: #38bdf8; }
+  </style>
+</head>
+
+<body>
+
+  <div class="container">
+
+    <!-- 1. LOGIN SCREEN -->
+    <div id="loginSection">
+      <div class="login-card">
+        <div class="login-icon">
+          <svg viewBox="0 0 24 24">
+            <path d="M12 2C6.48 2 2 5.91 2 10.74c0 4.3 3.6 7.9 8.47 8.61.33.07.78.22.89.51.1.26.07.67.03.93l-.15.93c-.05.29-.22 1.13.99.62 1.21-.51 6.54-3.85 8.92-6.59C22.42 14.18 22 10.74 22 10.74 22 5.91 17.52 2 12 2z"/>
+          </svg>
+        </div>
+        <h2 style="font-size: 1.25rem; margin-bottom: 6px;">เข้าสู่ระบบจัดการ LINE</h2>
+        <div class="subtitle" style="margin-bottom: 20px;">ระบบสรุปเวลาสแกนนิ้ว โรงเรียนแสงธรรมวิทยา</div>
+
+        <form onsubmit="handleLogin(event)">
+          <div class="form-group">
+            <label class="form-label" for="loginUser">ชื่อผู้ใช้งาน</label>
+            <input class="form-input" id="loginUser" required placeholder="admin" autocomplete="username">
+          </div>
+          <div class="form-group">
+            <label class="form-label" for="loginPass">รหัสผ่าน</label>
+            <input type="password" class="form-input" id="loginPass" required placeholder="••••••••" autocomplete="current-password">
+          </div>
+          <button type="submit" class="btn btn-primary" style="width: 100%; justify-content: center; padding: 10px;">
+            เข้าสู่ระบบ
+          </button>
+        </form>
+      </div>
+    </div>
+
+    <!-- 2. DASHBOARD MAIN (เมื่อ Login แล้ว) -->
+    <div id="mainDashboard" style="display: none;">
+      <!-- Header -->
+      <header>
+        <div class="brand">
+          <div class="logo-icon">
+            <svg viewBox="0 0 24 24">
+              <path d="M12 2C6.48 2 2 5.91 2 10.74c0 4.3 3.6 7.9 8.47 8.61.33.07.78.22.89.51.1.26.07.67.03.93l-.15.93c-.05.29-.22 1.13.99.62 1.21-.51 6.54-3.85 8.92-6.59C22.42 14.18 22 10.74 22 10.74 22 5.91 17.52 2 12 2z"/>
+            </svg>
+          </div>
+          <div>
+            <h1 id="companyName">ระบบสรุปเวลาเข้างานส่ง LINE</h1>
+            <div class="subtitle" id="subtitleDate">กำลังโหลดข้อมูล...</div>
+          </div>
+        </div>
+        <div class="header-actions">
+          <button class="btn btn-outline" style="border-color: #06c755; color: #4ade80; display: flex; align-items: center; gap: 6px;" onclick="openLineModal()">
+            <span style="display:inline-block; width:8px; height:8px; border-radius:50%; background:#f59e0b;" id="lineHeaderDot"></span>
+            เชื่อมต่อ LINE
+          </button>
+          <button class="btn btn-outline" style="border-color: #0088cc; color: #38bdf8; display: flex; align-items: center; gap: 6px;" onclick="openTelegramModal()">
+            <span style="display:inline-block; width:8px; height:8px; border-radius:50%; background:#f59e0b;" id="tgHeaderDot"></span>
+            Telegram Bot
+          </button>
+          <button class="btn btn-outline" onclick="openSettingsModal()">ตั้งค่าระบบ</button>
+          <button class="btn btn-outline" onclick="loadStatus()">รีเฟรช</button>
+          <button class="btn btn-primary" onclick="sendNow()">ส่งรายงานตอนนี้</button>
+          <button class="btn btn-outline" onclick="handleLogout()" title="ออกจากระบบ" style="color: #fca5a5;">ออกจากระบบ</button>
+        </div>
+      </header>
+
+      <!-- Stats Cards -->
+      <div class="grid-stats" style="grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));">
+        <div class="card">
+          <div class="card-title">
+            <span>เวลาส่งอัตโนมัติ</span>
+            <span class="badge-chip green" id="statusBadge">Active</span>
+          </div>
+          <div class="stat-val" id="sendTimesDisplay">--:--</div>
+          <div class="form-hint" id="nextRunDisplay">รอบถัดไป: ...</div>
+          <div style="margin-top: 6px; font-size: 0.75rem; color: #34d399; display: flex; align-items: center; gap: 4px;" title="ระบบตั้งเวลาทำงานที่ Backend ไม่จำเป็นต้องเปิดหน้าเว็บทิ้งไว้">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
+            <span>รันอัตโนมัติหลังบ้าน (ปิดหน้าเว็บได้เลย)</span>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-title">
+            <span>กฎเวลาเข้างาน</span>
+            <span class="badge-chip orange">07:30 น.</span>
+          </div>
+          <div class="stat-val" style="font-size: 1.15rem;" id="ruleTimeDisplay">สาย: หลัง 07:30</div>
+          <div class="form-hint" id="autoDlDisplay">Auto DL: 09:00 น.</div>
+        </div>
+
+        <div class="card">
+          <div class="card-title">
+            <span>ผู้รับรายงานที่เปิดใช้</span>
+            <span class="badge-chip" id="recCountBadge">0 รายการ</span>
+          </div>
+          <div class="stat-val" id="activeRecCount">0 <span>รายการ</span></div>
+          <div class="form-hint">ส่งเฉพาะผู้ที่ระบุ ID</div>
+        </div>
+
+        <div class="card">
+          <div class="card-title">
+            <span>สถานะฐานข้อมูล</span>
+            <span class="badge-chip green" id="dbStatusBadge">กำลังตรวจ...</span>
+          </div>
+          <div class="stat-val" style="font-size: 1.1rem;" id="dbStatusText">hiptime</div>
+          <div class="form-hint" id="dbHostDisplay">SQL Server 2012</div>
+        </div>
+      </div>
+
+
+      <!-- Main Content: 2 Columns -->
+      <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 20px;">
+        
+        <!-- Left Column: Discovered + Add Form + Recipient List -->
+        <div>
+
+          <!-- ⭐️ DISCOVERED SECTION: สมาชิก LINE ที่เชื่อมต่อเข้ามา -->
+          <div class="card" style="border: 1px solid rgba(6, 199, 85, 0.35); background: rgba(6, 199, 85, 0.05); margin-bottom: 20px;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; flex-wrap: wrap; gap: 8px;">
+              <h2 style="font-size: 1.05rem; display: flex; align-items: center; gap: 8px;">
+                สมาชิก LINE ที่เชื่อมต่อเข้ามา
+              </h2>
+              <div style="display: flex; gap: 6px; align-items: center;">
+                <span class="badge-chip green" id="autoAddBadge">Auto-Add: เปิด</span>
+                <span class="badge-chip" id="discoveredBadge">0 คน/กลุ่ม</span>
+              </div>
+            </div>
+            
+            <div id="discoveredList">
+              <div class="empty-state">กำลังตรวจหารายชื่อ...</div>
+            </div>
+
+            <div class="help-box" style="margin-top: 12px; background: rgba(0,0,0,0.25);">
+              <strong>[ระบบ Auto-Add อัตโนมัติ]:</strong> เมื่อคุณครูหรือกลุ่ม LINE แอดเพื่อนบอท (Add Friend) ระบบจะลงทะเบียนชื่อและเปิดรับรายงานประจำวัน 09:30 น. ให้อัตโนมัติทันที ไม่ต้องให้แอดมินมากดอนุมัติทีละคนครับ (ตั้งค่าได้ที่ปุ่ม <strong>"เชื่อมต่อ LINE"</strong>)
+            </div>
+          </div>
+
+          <!-- Add Recipient Form (Manual) -->
+          <div class="card">
+            <h2 style="font-size: 1.05rem; margin-bottom: 14px;">เพิ่มผู้รับด้วยตนเอง (Manual)</h2>
+            <form id="addForm" onsubmit="handleAddRecipient(event)">
+              <div class="form-group">
+                <label class="form-label" for="targetId">LINE User ID หรือ Group ID *</label>
+                <input class="form-input" id="targetId" placeholder="เช่น U79b78adfc1c2eacfe1a004bc0beea7f1 หรือ C..." required>
+                <div class="form-hint">ขึ้นต้นด้วย U (บุคคล) หรือ C (กลุ่มไลน์)</div>
+              </div>
+              
+              <div class="form-group">
+                <label class="form-label" for="targetName">ชื่อ / ตำแหน่ง (ระบุช่วยจำ)</label>
+                <input class="form-input" id="targetName" placeholder="เช่น ผอ. สมชาย, ครูเวร, หรือ กลุ่มครู">
+              </div>
+
+              <button type="submit" class="btn btn-primary" style="width: 100%; justify-content: center;">
+                บันทึกผู้รับรายงาน
+              </button>
+            </form>
+          </div>
+
+          <!-- Recipient List -->
+          <div class="card" style="margin-top: 20px;">
+            <h2 style="font-size: 1.05rem; margin-bottom: 14px;">รายชื่อผู้รับรายงานปัจจุบัน (<span id="listCount">0</span>)</h2>
+            <div id="recipientList">
+              <div class="empty-state">กำลังโหลดรายชื่อ...</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Right Column: Live Attendance & Preview -->
+        <div>
+          <div class="card">
+            <h2 style="font-size: 1.05rem; margin-bottom: 14px;">พรีวิวข้อความสรุปที่จะส่งเข้า LINE</h2>
+            <div class="preview-box" id="previewText">กำลังโหลดตัวอย่างข้อความ...</div>
+            <div class="form-hint" style="margin-top: 8px;">
+              * ข้อความนี้จะถูกส่งอัตโนมัติตามเวลา 09:30 เข้า LINE ของผู้รับทุกคนที่เปิดใช้งาน (สวิตช์เปิดอยู่)
+            </div>
+          </div>
+
+          <!-- Security Mode Card -->
+          <div class="card" style="margin-top: 20px;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; gap: 8px; flex-wrap: wrap;">
+              <h2 style="font-size: 1.05rem;">ความปลอดภัย (Local Standalone Mode)</h2>
+              <span class="badge-chip green">🛡 ปลอดภัย 100% (ไม่เปิดพอร์ต)</span>
+            </div>
+            <div style="font-size: 0.85rem; color: var(--text-muted); line-height: 1.6;">
+              ระบบทำงานภายในเครื่อง (Local Standalone) ไม่เปิดพอร์ตออกสู่อินเทอร์เน็ต และไม่ใช้ Cloudflare Tunnel<br>
+              การส่งรายงานจะยิงออกข้างเดียว (Outbound Broadcast) ไปหา LINE และสร้างไฟล์ Excel ประจำวันลงเครื่องโดยตรง ปลอดภัยสูงสุดสำหรับเซิร์ฟเวอร์
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+    </div>
+
+  </div>
+
+  <!-- 4. SETTINGS MODAL -->
+  <div id="settingsModal" class="modal-backdrop">
+    <div class="modal-card">
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;">
+        <h2 style="font-size: 1.15rem;">ตั้งค่าระบบ (Settings)</h2>
+        <button class="btn btn-outline btn-sm" onclick="closeSettingsModal()">ปิด (Esc)</button>
+      </div>
+
+      <form id="settingsForm" onsubmit="handleSaveSettings(event)">
+        <!-- เวลาทำงานและการส่ง -->
+        <h3 style="font-size: 0.95rem; color: var(--accent); margin-bottom: 10px;">เวลาทำงานและรอบการส่งรายงาน</h3>
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 16px;">
+          <div class="form-group">
+            <label class="form-label" for="cfgLateTime">เวลาตัดสาย *</label>
+            <input class="form-input" id="cfgLateTime" value="07:30" placeholder="07:30" required>
+            <div class="form-hint">เช่น 07:30 น. (เกินเวลานี้ถือว่าสาย)</div>
+          </div>
+          <div class="form-group">
+            <label class="form-label">รอบส่งสรุปประจำวัน (LINE &amp; Telegram) * (ได้ไม่จำกัดรอบต่อวัน)</label>
+            <div id="cfgSendTimesList" class="time-list"></div>
+            <div class="form-hint">ใช้ตารางเวลาร่วมกันทั้ง LINE และ Telegram (Dynamic Summary: ส่งเฉพาะเมื่อมีการเช็คชื่อเพิ่ม)</div>
+          </div>
+        </div>
+
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 16px;">
+          <label style="background: rgba(6, 199, 85, 0.06); border: 1px solid rgba(6, 199, 85, 0.25); border-radius: 10px; padding: 12px; display: flex; align-items: flex-start; gap: 10px; cursor: pointer; font-size: 0.88rem;">
+            <input type="checkbox" id="cfgShowPresent" checked style="margin-top: 3px; accent-color: #06c755;">
+            <div>
+              <strong style="color: #4ade80;">แสดงหมวด "✅ มาตรงเวลา" ใน LINE</strong>
+              <div style="font-size: 0.78rem; color: var(--text-muted); margin-top: 2px;">
+                แสดงรายชื่อคนมาปกติในรายงานสรุปฝั่ง LINE (จำกัดโควตาปลอดภัย 100 คน)
+              </div>
+            </div>
+          </label>
+
+          <label style="background: rgba(56, 189, 248, 0.06); border: 1px solid rgba(56, 189, 248, 0.25); border-radius: 10px; padding: 12px; display: flex; align-items: flex-start; gap: 10px; cursor: pointer; font-size: 0.88rem;">
+            <input type="checkbox" id="cfgTgShowPresent" checked style="margin-top: 3px; accent-color: #38bdf8;">
+            <div>
+              <strong style="color: #38bdf8;">แสดงหมวด "✅ มาตรงเวลา" ใน Telegram</strong>
+              <div style="font-size: 0.78rem; color: var(--text-muted); margin-top: 2px;">
+                แสดงรายชื่อคนมาปกติครบ 100% ในรายงานสรุปฝั่ง Telegram (ติ๊กออกหากดูจาก Realtime แล้ว)
+              </div>
+            </div>
+          </label>
+        </div>
+
+        <!-- การเชื่อมต่อ SQL Server -->
+        <h3 style="font-size: 0.95rem; color: var(--accent); margin-bottom: 10px; border-top: 1px solid var(--card-border); padding-top: 14px;">การเชื่อมต่อฐานข้อมูล SQL Server</h3>
+        
+        <div class="form-group">
+          <label class="form-label" for="cfgAuthType">รูปแบบการยืนยันตัวตน (Authentication)</label>
+          <select class="form-input" id="cfgAuthType" onchange="toggleAuthFields()">
+            <option value="sql" selected>SQL Server Authentication (ระบุ User sa และ Password - แนะนำ)</option>
+            <option value="windows">Windows Authentication (ใช้สิทธิ์ Windows)</option>
+            <option value="mock">โหมดจำลอง (Mock DB - เสมือนจริง ไม่ต้องเปิด SQL Server)</option>
+          </select>
+        </div>
+
+        <div style="display: grid; grid-template-columns: 2fr 1fr; gap: 12px;">
+          <div class="form-group">
+            <label class="form-label" for="cfgDbHost">Server / Host / Instance *</label>
+            <input class="form-input" id="cfgDbHost" value="127.0.0.1" placeholder="เช่น 127.0.0.1 หรือ SS-PC\SQLEXPRES">
+            <div class="form-hint" style="margin-top: 4px; display: flex; gap: 6px; align-items: center; flex-wrap: wrap;">
+              คลิกเพื่อใส่:
+              <span class="rec-id" style="padding: 2px 6px; cursor: pointer;" onclick="document.getElementById('cfgDbHost').value='127.0.0.1'">127.0.0.1 (พอร์ต 1433)</span>
+              <span class="rec-id" style="padding: 2px 6px; cursor: pointer;" onclick="document.getElementById('cfgDbHost').value='127.0.0.1\\SQLEXPRES'">127.0.0.1\SQLEXPRES</span>
+              <span class="rec-id" style="padding: 2px 6px; cursor: pointer;" onclick="document.getElementById('cfgDbHost').value='SS-PC\\SQLEXPRES'">SS-PC\SQLEXPRES</span>
+            </div>
+          </div>
+          <div class="form-group">
+            <label class="form-label" for="cfgDbPort">Port</label>
+            <input class="form-input" id="cfgDbPort" value="1433" placeholder="1433">
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label" for="cfgDbName">ชื่อฐานข้อมูล (Database Name) *</label>
+          <input class="form-input" id="cfgDbName" value="hiptime" placeholder="hiptime หรือ Synctime">
+          <div class="form-hint" style="margin-top: 4px; display: flex; gap: 6px; align-items: center; flex-wrap: wrap;">
+            คลิกเพื่อใส่ (ระบบสลับหาให้อัตโนมัติ):
+            <span class="rec-id" style="padding: 2px 6px; cursor: pointer;" onclick="document.getElementById('cfgDbName').value='hiptime'">hiptime</span>
+            <span class="rec-id" style="padding: 2px 6px; cursor: pointer;" onclick="document.getElementById('cfgDbName').value='Synctime'">Synctime</span>
+          </div>
+        </div>
+
+        <div id="sqlAuthFields" style="display: block;">
+          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
+            <div class="form-group">
+              <label class="form-label" for="cfgDbUser">User</label>
+              <input class="form-input" id="cfgDbUser" value="sa" placeholder="sa">
+            </div>
+            <div class="form-group">
+              <label class="form-label" for="cfgDbPass">Password</label>
+              <input type="password" class="form-input" id="cfgDbPass" value="" placeholder="รหัสผ่าน sa">
+            </div>
+          </div>
+        </div>
+
+        <div class="form-group" style="margin-top: 8px;">
+          <button type="button" class="btn btn-outline" style="width: 100%; justify-content: center;" onclick="testDbConnection()">
+            ทดสอบการเชื่อมต่อ Database ตอนนี้ (Live Connection Test)
+          </button>
+          <div id="testDbResult" style="margin-top: 8px; font-size: 0.85rem; display: none;"></div>
+        </div>
+
+        <div style="display: flex; justify-content: flex-end; gap: 10px; margin-top: 18px; border-top: 1px solid var(--card-border); padding-top: 14px;">
+          <button type="button" class="btn btn-outline" onclick="closeSettingsModal()">ยกเลิก</button>
+          <button type="submit" class="btn btn-primary">บันทึกการตั้งค่า</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- 5. LINE CONNECTION MODAL -->
+  <div id="lineModal" class="modal-backdrop">
+    <div class="modal-card" style="max-width: 580px;">
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;">
+        <h2 style="font-size: 1.15rem; display: flex; align-items: center; gap: 8px;">
+          ตั้งค่าเชื่อมต่อ LINE Messaging API
+        </h2>
+        <button class="btn btn-outline btn-sm" onclick="closeLineModal()">ปิด (Esc)</button>
+      </div>
+
+      <!-- Bot Profile Status Box -->
+      <div id="lineBotCard" style="background: rgba(6, 199, 85, 0.08); border: 1px solid rgba(6, 199, 85, 0.3); border-radius: 12px; padding: 14px; margin-bottom: 16px; display: flex; align-items: center; gap: 14px;">
+        <div id="lineBotAvatar" style="width: 52px; height: 52px; border-radius: 50%; background: #1e293b; display: flex; align-items: center; justify-content: center; overflow: hidden; flex-shrink: 0; border: 2px solid rgba(6,199,85,0.4);">
+          <svg style="width: 28px; height: 28px; fill: #64748b;" viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 5.91 2 10.74c0 4.3 3.6 7.9 8.47 8.61.33.07.78.22.89.51.1.26.07.67.03.93l-.15.93c-.05.29-.22 1.13.99.62 1.21-.51 6.54-3.85 8.92-6.59C22.42 14.18 22 10.74 22 10.74 22 5.91 17.52 2 12 2z"/></svg>
+        </div>
+        <div style="flex: 1; min-width: 0;">
+          <div style="display: flex; align-items: center; gap: 8px; flex-wrap: wrap;">
+            <div id="lineBotName" style="font-weight: 600; font-size: 1.05rem;">กำลังตรวจสอบสถานะ LINE บอท...</div>
+            <span id="lineBotBadge" class="badge-chip orange">กำลังตรวจ</span>
+          </div>
+          <div id="lineBotSub" style="font-size: 0.8rem; color: var(--text-muted); margin-top: 3px;">
+            กรุณาใส่ Channel Access Token ด้านล่าง
+          </div>
+        </div>
+      </div>
+
+      <form id="lineSettingsForm" onsubmit="handleSaveLineSettings(event)">
+        <div class="form-group">
+          <label class="form-label" for="cfgLineToken">
+            Channel Access Token (Long-lived) *
+          </label>
+          <div style="position: relative;">
+            <input type="password" class="form-input" id="cfgLineToken" placeholder="มี Token ในระบบแล้ว (วางใหม่เฉพาะเมื่อต้องการเปลี่ยน)" style="padding-right: 80px; font-family: monospace; font-size: 0.85rem;">
+            <button type="button" onclick="toggleTokenVisibility('cfgLineToken', this)" style="position: absolute; right: 8px; top: 50%; transform: translateY(-50%); background: transparent; border: none; color: var(--accent); cursor: pointer; font-size: 0.8rem; padding: 4px;">
+              แสดง
+            </button>
+          </div>
+          <div class="form-hint">ได้จาก LINE Developers &gt; Channel ของคุณ &gt; แท็บ Messaging API &gt; Channel access token</div>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label" for="cfgLineSecret">
+            Channel Secret (สำหรับยืนยัน Signature)
+          </label>
+          <div style="position: relative;">
+            <input type="password" class="form-input" id="cfgLineSecret" placeholder="วาง Channel Secret จากแท็บ Basic settings" style="padding-right: 80px; font-family: monospace; font-size: 0.85rem;">
+            <button type="button" onclick="toggleTokenVisibility('cfgLineSecret', this)" style="position: absolute; right: 8px; top: 50%; transform: translateY(-50%); background: transparent; border: none; color: var(--accent); cursor: pointer; font-size: 0.8rem; padding: 4px;">
+              แสดง
+            </button>
+          </div>
+          <div class="form-hint">ได้จากแท็บ Basic settings &gt; Channel secret (ใช้ป้องกันการยิง Webhook ปลอม)</div>
+        </div>
+
+        <div class="form-group" style="background: rgba(6, 199, 85, 0.06); border: 1px solid rgba(6, 199, 85, 0.25); border-radius: 10px; padding: 12px;">
+          <label style="display: flex; align-items: flex-start; gap: 10px; cursor: pointer; font-size: 0.9rem;">
+            <input type="checkbox" id="cfgAutoAdd" checked style="margin-top: 3px; accent-color: #06c755;">
+            <div>
+              <strong style="color: #4ade80;">[เปิดใช้งาน] เพิ่มทุกคนที่แอดเพื่อนเข้าเป็นผู้รับรายงานอัตโนมัติ (Auto-Add)</strong>
+              <div style="font-size: 0.8rem; color: var(--text-muted); margin-top: 2px;">
+                เมื่อมีครู/บุคลากร แอดไลน์บอท หรือดึงบอทเข้ากลุ่ม ระบบจะบันทึกชื่อและเปิดสวิตช์รับรายงานประจำวัน 09:30 น. ให้อัตโนมัติทันที
+              </div>
+            </div>
+          </label>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label" for="cfgWelcomeMsg">
+            ข้อความตอบกลับเมื่อแอดเพื่อน (เว้นว่างไว้จะใช้ข้อความเริ่มต้นของระบบ)
+          </label>
+          <textarea class="form-input" id="cfgWelcomeMsg" rows="2" placeholder="สวัสดีครับคุณ {name} ยินดีต้อนรับสู่ระบบรายงานเวลาทำงาน..."></textarea>
+        </div>
+
+        <div style="display: flex; gap: 10px; margin-top: 14px;">
+          <button type="button" class="btn btn-outline" style="flex: 1; justify-content: center;" onclick="testLineToken()">
+            ทดสอบเชื่อมต่อ Token
+          </button>
+          <button type="submit" class="btn btn-primary" style="flex: 1; justify-content: center;">
+            บันทึกการเชื่อมต่อ LINE
+          </button>
+        </div>
+        <div id="testLineResult" style="margin-top: 10px; font-size: 0.85rem; display: none;"></div>
+      </form>
+
+      <!-- Webhook Helper Box -->
+      <div class="help-box" style="margin-top: 18px; border-left: 3px solid #06c755; background: rgba(0,0,0,0.3);">
+        <div style="font-weight: 600; font-size: 0.85rem; margin-bottom: 6px; color: #4ade80;">
+          ขั้นตอนเชื่อมต่อ Webhook ใน LINE Developers Console:
+        </div>
+        <ol style="font-size: 0.8rem; color: var(--text-muted); padding-left: 18px; line-height: 1.6;">
+          <li>เปิด <a href="https://developers.line.biz/console/" target="_blank" style="color: var(--accent); text-decoration: underline;">LINE Developers Console</a> แล้วเลือก Channel ของคุณ</li>
+          <li>ไปที่แท็บ <strong>Messaging API</strong> เลื่อนลงมาที่หัวข้อ <strong>Webhook settings</strong></li>
+          <li>นำ URL นี้ไปใส่: <code id="lineModalWebhook" style="color: #86efac; background: rgba(0,0,0,0.5); padding: 2px 6px; border-radius: 4px; cursor: pointer; border: 1px dashed rgba(6,199,85,0.4);" onclick="copyId(this.innerText)">กำลังโหลด...</code> (คลิกเพื่อก็อปปี้)</li>
+          <li>กดปุ่ม <strong>Update</strong> แล้วเปิดสวิตช์ <strong>Use webhook</strong> ให้เป็นสีเขียว</li>
+          <li>ไปที่ <a href="https://manager.line.biz/" target="_blank" style="color: var(--accent); text-decoration: underline;">LINE Official Account Manager</a> &gt; ตั้งค่า &gt; ตั้งค่าการตอบกลับ &gt; <strong>ปิด Auto-response messages</strong> เพื่อไม่ให้บอทพื้นฐานตอบซ้ำซ้อน</li>
+        </ol>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- 6. TELEGRAM MODAL -->
+  <div id="telegramModal" class="modal-backdrop">
+    <div class="modal-card" style="max-width: 650px;">
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;">
+        <h2 style="font-size: 1.15rem; display: flex; align-items: center; gap: 8px; color: #38bdf8;">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm4.64 6.8c-.15 1.58-.8 5.42-1.13 7.19-.14.75-.42 1-.68 1.03-.58.05-1.02-.38-1.58-.75-.88-.58-1.38-.94-2.23-1.5-.99-.65-.35-1.01.22-1.59.15-.15 2.71-2.48 2.76-2.69a.2.2 0 00-.05-.18c-.06-.05-.14-.03-.21-.02-.09.02-1.49.95-4.22 2.79-.4.27-.76.41-1.08.4-.36-.01-1.04-.2-1.55-.37-.63-.2-1.12-.31-1.08-.66.02-.18.27-.36.74-.55 2.92-1.27 4.86-2.11 5.83-2.51 2.78-1.16 3.35-1.36 3.73-1.36.08 0 .27.02.39.12.1.08.13.19.14.27-.01.06.01.24 0 .38z"/></svg>
+          ตั้งค่า Telegram Bot & Realtime
+        </h2>
+        <button class="btn btn-outline btn-sm" onclick="closeTelegramModal()">ปิด (Esc)</button>
+      </div>
+
+      <!-- Telegram Profile Status -->
+      <div id="tgBotCard" style="background: rgba(0, 136, 204, 0.08); border: 1px solid rgba(0, 136, 204, 0.3); border-radius: 12px; padding: 14px; margin-bottom: 16px; display: flex; align-items: center; gap: 14px;">
+        <div style="width: 50px; height: 50px; border-radius: 50%; background: #0088cc; display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
+          <svg style="width: 26px; height: 26px; fill: #ffffff;" viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm4.64 6.8c-.15 1.58-.8 5.42-1.13 7.19-.14.75-.42 1-.68 1.03-.58.05-1.02-.38-1.58-.75-.88-.58-1.38-.94-2.23-1.5-.99-.65-.35-1.01.22-1.59.15-.15 2.71-2.48 2.76-2.69a.2.2 0 00-.05-.18c-.06-.05-.14-.03-.21-.02-.09.02-1.49.95-4.22 2.79-.4.27-.76.41-1.08.4-.36-.01-1.04-.2-1.55-.37-.63-.2-1.12-.31-1.08-.66.02-.18.27-.36.74-.55 2.92-1.27 4.86-2.11 5.83-2.51 2.78-1.16 3.35-1.36 3.73-1.36.08 0 .27.02.39.12.1.08.13.19.14.27-.01.06.01.24 0 .38z"/></svg>
+        </div>
+        <div style="flex: 1; min-width: 0;">
+          <div style="display: flex; align-items: center; gap: 8px; flex-wrap: wrap;">
+            <div id="tgBotName" style="font-weight: 600; font-size: 1.05rem;">กำลังตรวจสถานะบอท...</div>
+            <span id="tgBotBadge" class="badge-chip orange">กำลังตรวจ</span>
+          </div>
+          <div id="tgBotSub" style="font-size: 0.8rem; color: var(--text-muted); margin-top: 3px;">
+            กำลังโหลดข้อมูล...
+          </div>
+        </div>
+      </div>
+
+      <form id="tgSettingsForm" onsubmit="handleSaveTgSettings(event)">
+        <div class="form-group">
+          <label class="form-label" for="cfgTgToken">Telegram Bot Token (จาก @BotFather)</label>
+          <div style="position: relative;">
+            <input type="password" class="form-input" id="cfgTgToken" placeholder="วาง Token ที่ได้จาก @BotFather หรือเว้นว่างหากใช้จาก .env" style="padding-right: 80px; font-family: monospace; font-size: 0.85rem;">
+            <button type="button" onclick="toggleTokenVisibility('cfgTgToken', this)" style="position: absolute; right: 8px; top: 50%; transform: translateY(-50%); background: transparent; border: none; color: var(--accent); cursor: pointer; font-size: 0.8rem; padding: 4px;">
+              แสดง
+            </button>
+          </div>
+          <div class="form-hint" id="tgTokenHint">ค่าในเว็บจะบันทึกลง settings.json (หากเว้นว่างจะดึงจาก TELEGRAM_TOKEN ในไฟล์ .env)</div>
+        </div>
+
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 14px;">
+          <label style="background: rgba(255,255,255,0.03); border: 1px solid var(--card-border); border-radius: 8px; padding: 10px; display: flex; align-items: center; gap: 8px; cursor: pointer;">
+            <input type="checkbox" id="cfgTgEnabled" checked style="accent-color: #0088cc;">
+            <span style="font-size: 0.85rem; font-weight: 600;">เปิดระบบ Telegram</span>
+          </label>
+          <label style="background: rgba(255,255,255,0.03); border: 1px solid var(--card-border); border-radius: 8px; padding: 10px; display: flex; align-items: center; gap: 8px; cursor: pointer;">
+            <input type="checkbox" id="cfgTgAutoAdd" checked style="accent-color: #0088cc;">
+            <span style="font-size: 0.85rem; font-weight: 600;">Auto-Add เมื่อ /start</span>
+          </label>
+          <label style="background: rgba(255,255,255,0.03); border: 1px solid var(--card-border); border-radius: 8px; padding: 10px; display: flex; align-items: center; gap: 8px; cursor: pointer;">
+            <input type="checkbox" id="cfgTgRealtimeEnabled" checked style="accent-color: #0088cc;">
+            <span style="font-size: 0.85rem; font-weight: 600;">เปิดแจ้งเตือน Realtime</span>
+          </label>
+          <label style="background: rgba(255,255,255,0.03); border: 1px solid var(--card-border); border-radius: 8px; padding: 10px; display: flex; align-items: center; gap: 8px; cursor: pointer;">
+            <input type="checkbox" id="cfgTgSummaryEnabled" checked style="accent-color: #0088cc;">
+            <span style="font-size: 0.85rem; font-weight: 600;">เปิดส่งสรุปประจำวัน</span>
+          </label>
+        </div>
+
+        <div class="help-box" style="margin-bottom: 12px; background: rgba(0, 136, 204, 0.08); border: 1px solid rgba(0, 136, 204, 0.25);">
+          <strong>ตารางเวลาส่งสรุปประจำวัน (ใช้ร่วมกับ LINE):</strong> <span id="tgSharedScheduleDisplay" style="color: #38bdf8; font-weight: 600;">--:--</span>
+          <div style="font-size: 0.78rem; color: var(--text-muted); margin-top: 2px;">
+            ตั้งค่ารอบเวลาส่งสรุปได้ที่ปุ่ม <strong>"ตั้งค่าระบบ"</strong> (ระบบ Dynamic Summary จะส่งเมื่อมีการเช็คชื่อเพิ่มก่อนถึงรอบเวลานั้น)
+          </div>
+        </div>
+
+        <div style="display: flex; gap: 10px; margin-top: 14px;">
+          <button type="button" class="btn btn-outline" style="flex: 1; justify-content: center;" onclick="testTgToken()">
+            ทดสอบเชื่อมต่อ Token
+          </button>
+          <button type="submit" class="btn btn-primary" style="flex: 1; justify-content: center; background: #0088cc; border-color: #0088cc;">
+            บันทึกตั้งค่า Telegram
+          </button>
+        </div>
+        <div id="testTgResult" style="margin-top: 10px; font-size: 0.85rem; display: none;"></div>
+      </form>
+
+      <!-- Telegram Recipients Table -->
+      <div style="margin-top: 20px; border-top: 1px solid var(--card-border); padding-top: 14px;">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+          <h3 style="font-size: 0.95rem; color: #38bdf8;">รายชื่อผู้รับบน Telegram (<span id="tgRecCount">0</span>)</h3>
+          <div style="display: flex; gap: 6px;">
+            <button class="btn btn-outline btn-sm" onclick="sendTgSummaryNow()">ส่งสรุปตอนนี้</button>
+            <button class="btn btn-outline btn-sm" onclick="loadTgData()">รีเฟรช</button>
+          </div>
+        </div>
+        
+        <div id="tgRecipientsList" style="max-height: 220px; overflow-y: auto;">
+          <div class="empty-state">กำลังโหลดรายชื่อ Telegram...</div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <div id="toast"></div>
+
+  <script>
+    let authToken = localStorage.getItem("report_token") || "";
+
+    function showToast(msg, isSuccess = true) {
+      const toast = document.getElementById("toast");
+      toast.innerText = msg;
+      toast.className = isSuccess ? "success" : "error";
+      toast.style.display = "flex";
+      setTimeout(() => { toast.style.display = "none"; }, 3500);
+    }
+
+    function authFetch(url, options = {}) {
+      options.headers = options.headers || {};
+      if (authToken) {
+        options.headers["Authorization"] = "Bearer " + authToken;
+      }
+      return fetch(url, options);
+    }
+
+    async function checkAuth() {
+      try {
+        const res = await authFetch("/api/me");
+        const data = await res.json();
+        if (data.authenticated) {
+          document.getElementById("loginSection").style.display = "none";
+          document.getElementById("mainDashboard").style.display = "block";
+          loadStatus();
+        } else {
+          document.getElementById("loginSection").style.display = "flex";
+          document.getElementById("mainDashboard").style.display = "none";
+        }
+      } catch (e) {
+        document.getElementById("loginSection").style.display = "flex";
+        document.getElementById("mainDashboard").style.display = "none";
+      }
+    }
+
+    async function handleLogin(e) {
+      e.preventDefault();
+      const username = document.getElementById("loginUser").value.trim();
+      const password = document.getElementById("loginPass").value.trim();
+
+      try {
+        const res = await fetch("/api/login", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ username, password })
+        });
+        const data = await res.json();
+        if (!data.ok) throw new Error(data.error || "เข้าสู่ระบบไม่สำเร็จ");
+
+        authToken = data.token;
+        localStorage.setItem("report_token", authToken);
+        showToast("เข้าสู่ระบบสำเร็จ!");
+        checkAuth();
+      } catch (err) {
+        showToast(err.message, false);
+      }
+    }
+
+    async function handleLogout() {
+      try {
+        await authFetch("/api/logout", { method: "POST" });
+      } catch (e) {}
+      authToken = "";
+      localStorage.removeItem("report_token");
+      showToast("ออกจากระบบแล้ว");
+      checkAuth();
+    }
+
+    async function loadStatus() {
+      try {
+        const res = await authFetch("/api/status");
+        if (res.status === 401) {
+          checkAuth();
+          return;
+        }
+        if (!res.ok) throw new Error("โหลดข้อมูลไม่สำเร็จ");
+        const data = await res.json();
+        
+        document.getElementById("companyName").innerText = data.company_name;
+        document.getElementById("subtitleDate").innerText = data.today_thai;
+        document.getElementById("sendTimesDisplay").innerText = (data.send_times || ["09:30"]).join(", ") + " น.";
+        document.getElementById("nextRunDisplay").innerText = "รอบถัดไป: " + (data.next_run || "ไม่มี");
+        document.getElementById("activeRecCount").innerHTML = `${data.active_count} <span>คน/กลุ่ม</span>`;
+        document.getElementById("recCountBadge").innerText = `${data.active_count} เปิดใช้งาน`;
+
+        if (document.getElementById("ruleTimeDisplay")) {
+          document.getElementById("ruleTimeDisplay").innerText = "สาย: หลัง " + (data.late_time || "07:30") + " น.";
+        }
+        if (document.getElementById("autoDlDisplay")) {
+          if (data.auto_download_times && data.auto_download_times.length > 0) {
+            document.getElementById("autoDlDisplay").style.display = "block";
+            document.getElementById("autoDlDisplay").innerText = "รอบดึงเข้า DB: " + data.auto_download_times.join(", ") + " น. (จากระบบ)";
+          } else {
+            document.getElementById("autoDlDisplay").style.display = "none";
+          }
+        }
+        if (document.getElementById("dbStatusBadge")) {
+          if (data.mock_mode) {
+            document.getElementById("dbStatusBadge").innerText = "โหมดจำลอง (Mock)";
+            document.getElementById("dbStatusBadge").className = "badge-chip orange";
+            document.getElementById("dbStatusText").innerText = "Mock DB Ready";
+            document.getElementById("dbHostDisplay").innerText = "ข้อมูลเสมือนจริง";
+          } else if (data.db_connected) {
+            document.getElementById("dbStatusBadge").innerText = "เชื่อมต่อแล้ว";
+            document.getElementById("dbStatusBadge").className = "badge-chip green";
+            document.getElementById("dbStatusText").innerText = (data.db_name || "Synctime") + " (OK)";
+            document.getElementById("dbHostDisplay").innerText = "Host: " + (data.db_host || "127.0.0.1");
+          } else {
+            document.getElementById("dbStatusBadge").innerText = "มีข้อผิดพลาด";
+            document.getElementById("dbStatusBadge").className = "badge-chip red";
+            document.getElementById("dbStatusText").innerText = "ไม่ได้เชื่อมต่อ";
+            document.getElementById("dbHostDisplay").innerText = "ดูข้อผิดพลาดที่ Log ด้านล่าง";
+          }
+        }
+
+        document.getElementById("previewText").innerHTML = formatPreviewForWeb(data.preview_text);
+
+        // Local Webhook info
+        const host = window.location.origin;
+        const modalWh = document.getElementById("lineModalWebhook");
+        if (modalWh) modalWh.innerText = host + "/webhook";
+
+        // Update LINE header status indicator & Auto-Add badge
+        const dot = document.getElementById("lineHeaderDot");
+        if (dot) {
+          dot.style.background = data.has_line_token ? "#4ade80" : "#f59e0b";
+        }
+        const autoBadge = document.getElementById("autoAddBadge");
+        if (autoBadge) {
+          autoBadge.innerText = data.auto_add_recipients ? "Auto-Add: เปิด" : "Auto-Add: ปิด";
+          autoBadge.className = data.auto_add_recipients ? "badge-chip green" : "badge-chip orange";
+        }
+
+        // Update Telegram header dot
+        const tgDot = document.getElementById("tgHeaderDot");
+        if (tgDot) {
+          tgDot.style.background = (data.has_telegram_token && data.telegram_enabled) ? "#38bdf8" : "#f59e0b";
+        }
+
+        window._currentDiscovered = data.discovered || [];
+        window._currentRecipients = data.recipients || [];
+        renderDiscovered(window._currentDiscovered, window._currentRecipients);
+        renderRecipients(window._currentRecipients);
+      } catch (e) {
+        showToast("เชื่อมต่อระบบไม่สำเร็จ: " + e.message, false);
+      }
+    }
+
+    const iconGroup = '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:block;margin:auto;"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>';
+    const iconUser = '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:block;margin:auto;"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>';
+
+    function formatPreviewForWeb(raw) {
+      if (!raw) return '<span style="color:var(--text-muted)">ไม่มีข้อมูล</span>';
+      let safe = escapeHtml(raw)
+        .replace(/📊\s*/g, '<span class="badge-chip" style="background:#0284c7; color:#fff; font-size:0.75rem; margin-right:4px;">สรุป</span>')
+        .replace(/👥\s*/g, '<span class="badge-chip" style="background:#475569; color:#fff; font-size:0.75rem; margin-right:4px;">รวม</span>')
+        .replace(/✅\s*/g, '<span class="badge-chip green" style="font-size:0.75rem; margin-right:4px;">ปกติ</span>')
+        .replace(/⏰\s*/g, '<span class="badge-chip orange" style="font-size:0.75rem; margin-right:4px;">สาย</span>')
+        .replace(/❌\s*/g, '<span class="badge-chip red" style="font-size:0.75rem; margin-right:4px;">ขาด</span>')
+        .replace(/📝\s*/g, '<span class="badge-chip" style="background:#8b5cf6; color:#fff; font-size:0.75rem; margin-right:4px;">ลา</span>')
+        .replace(/⏳\s*/g, '<span class="badge-chip" style="background:#64748b; color:#fff; font-size:0.75rem; margin-right:4px;">รอ</span>')
+        .replace(/🎉\s*/g, '<span class="badge-chip green" style="font-size:0.75rem; margin-right:4px;">วันหยุด</span>');
+
+      // Strip any other emojis that turn into square boxes on Windows 7
+      safe = safe.replace(/[\uD800-\uDBFF][\uDC00-\uDFFF]|[\u2600-\u27BF]/g, '');
+      return safe.replace(/\n/g, '<br>');
+    }
+
+    function renderDiscovered(discoveredList, recipientsList) {
+      const el = document.getElementById("discoveredList");
+      const existingIds = new Set(recipientsList.map(r => r.id.toLowerCase()));
+
+      // กรองเฉพาะคนที่ยังไม่ได้อยู่ในผู้รับรายงาน
+      const pending = discoveredList.filter(d => !existingIds.has(d.id.toLowerCase()));
+      document.getElementById("discoveredBadge").innerText = `${pending.length} รายการใหม่`;
+
+      if (pending.length === 0) {
+        el.innerHTML = '<div class="empty-state">ยังไม่มีคนแอดมาใหม่ หรือทุกคนถูกเพิ่มเข้ารายการรับรายงานแล้ว</div>';
+        return;
+      }
+
+      el.innerHTML = pending.map(item => {
+        const isGroup = item.id.startsWith("C");
+        const safePic = (item.picture_url && item.picture_url.startsWith("http")) ? item.picture_url : "";
+        const avatarImg = safePic
+          ? `<img src="${escapeHtml(safePic)}" alt="">`
+          : (isGroup ? iconGroup : iconUser);
+
+        return `
+          <div class="recipient-item" style="border-color: rgba(6, 199, 85, 0.3);">
+            <div class="rec-info">
+              <div class="avatar">${avatarImg}</div>
+              <div class="rec-texts">
+                <div class="rec-name">
+                  ${escapeHtml(item.name || (isGroup ? 'กลุ่ม LINE' : 'ผู้ใช้งาน'))}
+                  <span class="tag-new">ใหม่</span>
+                </div>
+                <div class="rec-id" onclick="copyId('${item.id}')" title="คลิกเพื่อคัดลอก">${escapeHtml(item.id)}</div>
+              </div>
+            </div>
+            <div class="rec-actions">
+              <button class="btn btn-success-soft btn-sm" onclick="addFromDiscovered('${item.id}')">
+                + เพิ่มคนนี้
+              </button>
+              <button class="btn btn-outline btn-sm" onclick="dismissDiscovered('${item.id}')" title="ละเว้น">
+                ละเว้น
+              </button>
+            </div>
+          </div>
+        `;
+      }).join('');
+    }
+
+    async function addFromDiscovered(id) {
+      const item = (window._currentDiscovered || []).find(d => d.id === id);
+      const name = item ? item.name : "";
+      try {
+        const res = await authFetch("/api/discovered/add-to-recipients", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ id, name })
+        });
+        const data = await res.json();
+        if (!data.ok) throw new Error(data.error || "เพิ่มไม่สำเร็จ");
+        showToast(`เพิ่ม "${name || id}" เป็นผู้รับรายงานเรียบร้อยแล้ว`);
+        loadStatus();
+      } catch (err) {
+        showToast(err.message, false);
+      }
+    }
+
+    async function dismissDiscovered(id) {
+      try {
+        await authFetch("/api/discovered/delete", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ id })
+        });
+        loadStatus();
+      } catch (e) {}
+    }
+
+    function renderRecipients(list) {
+      const el = document.getElementById("recipientList");
+      document.getElementById("listCount").innerText = list.length;
+      
+      if (!list || list.length === 0) {
+        el.innerHTML = '<div class="empty-state">ยังไม่มีผู้รับรายงาน กรุณาเลือกจากด้านบนหรือกรอก User ID</div>';
+        return;
+      }
+
+      el.innerHTML = list.map(r => {
+        const isGroup = r.id.startsWith("C");
+        return `
+          <div class="recipient-item">
+            <div class="rec-info">
+              <div class="avatar">${isGroup ? iconGroup : iconUser}</div>
+              <div class="rec-texts">
+                <div class="rec-name">${escapeHtml(r.name || 'ผู้ใช้งาน')}</div>
+                <div class="rec-id" title="คลิกเพื่อคัดลอก" onclick="copyId('${r.id}')">${escapeHtml(r.id)}</div>
+              </div>
+            </div>
+            <div class="rec-actions">
+              <button class="btn btn-outline btn-sm" onclick="testSend('${r.id}')" title="ทดสอบส่งข้อความหาคนนี้">
+                ส่งทดสอบ
+              </button>
+              <label class="switch" title="เปิด/ปิดการรับรายงาน">
+                <input type="checkbox" ${r.active ? 'checked' : ''} onchange="toggleActive('${r.id}', this.checked)">
+                <span class="slider"></span>
+              </label>
+              <button class="btn btn-danger btn-sm" onclick="deleteRecipient('${r.id}')" title="ลบ">
+                ลบ
+              </button>
+            </div>
+          </div>
+        `;
+      }).join('');
+    }
+
+    async function handleAddRecipient(e) {
+      e.preventDefault();
+      const id = document.getElementById("targetId").value.trim();
+      const name = document.getElementById("targetName").value.trim();
+
+      try {
+        const res = await authFetch("/api/recipients", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ id, name })
+        });
+        const data = await res.json();
+        if (!data.ok) throw new Error(data.error || "เกิดข้อผิดพลาด");
+
+        showToast("เพิ่มผู้รับรายงานเรียบร้อยแล้ว");
+        document.getElementById("targetId").value = "";
+        document.getElementById("targetName").value = "";
+        loadStatus();
+      } catch (err) {
+        showToast(err.message, false);
+      }
+    }
+
+    async function toggleActive(id, active) {
+      try {
+        const res = await authFetch("/api/recipients/toggle", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ id, active })
+        });
+        const data = await res.json();
+        if (!data.ok) throw new Error("เปลี่ยนสถานะไม่สำเร็จ");
+        showToast(active ? "เปิดรับรายงานแล้ว" : "ปิดรับรายงานชั่วคราวแล้ว");
+        loadStatus();
+      } catch (err) {
+        showToast(err.message, false);
+      }
+    }
+
+    async function deleteRecipient(id) {
+      const item = (window._currentRecipients || []).find(r => r.id === id);
+      const name = item ? item.name : id;
+      if (!confirm(`ต้องการลบ "${name || id}" ออกจากรายชื่อผู้รับรายงานใช่หรือไม่?`)) return;
+      try {
+        const res = await authFetch("/api/recipients/delete", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ id })
+        });
+        const data = await res.json();
+        if (!data.ok) throw new Error("ลบไม่สำเร็จ");
+        showToast("ลบผู้รับเรียบร้อยแล้ว");
+        loadStatus();
+      } catch (err) {
+        showToast(err.message, false);
+      }
+    }
+
+    async function testSend(id) {
+      try {
+        showToast("กำลังส่งข้อความทดสอบ...", true);
+        const res = await authFetch("/api/test-send", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ id })
+        });
+        const data = await res.json();
+        if (!data.ok) throw new Error(data.error || "ส่งไม่สำเร็จ");
+        showToast("ส่งข้อความทดสอบเข้า LINE เรียบร้อยแล้ว!");
+      } catch (err) {
+        showToast("ส่งไม่สำเร็จ: " + err.message, false);
+      }
+    }
+
+    async function sendNow() {
+      if (!confirm("ต้องการส่งสรุปการมาทำงานเข้า LINE ของผู้รับทุกคนตอนนี้ทันทีใช่หรือไม่?")) return;
+      try {
+        showToast("กำลังส่งรายงานสรุป...", true);
+        const res = await authFetch("/api/send-now", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" }
+        });
+        const data = await res.json();
+        if (!data.ok) throw new Error(data.error || "ส่งไม่สำเร็จ");
+        showToast(data.message);
+        loadStatus();
+      } catch (err) {
+        showToast("ส่งไม่สำเร็จ: " + err.message, false);
+      }
+    }
+
+    function copyId(id) {
+      navigator.clipboard.writeText(id);
+      showToast("คัดลอก ID แล้ว: " + id);
+    }
+
+    function escapeHtml(str) {
+      return (str || '').replace(/[&<>"']/g, m => ({
+        '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'
+      }[m]));
+    }
+
+    // ================== TIME LIST COMPONENT (รอบส่งหลายรอบ) ==================
+    function normalizeTimes(list) {
+      const seen = {};
+      const out = [];
+      (list || []).forEach(function (s) {
+        const m = /^(\d{1,2})[:.](\d{2})/.exec((s || "").trim());
+        if (!m) return;
+        const h = parseInt(m[1], 10), mi = parseInt(m[2], 10);
+        if (h > 23 || mi > 59) return;
+        const t = (h < 10 ? "0" : "") + h + ":" + (mi < 10 ? "0" : "") + mi;
+        if (!seen[t]) { seen[t] = true; out.push(t); }
+      });
+      return out.sort();
+    }
+
+    function renderTimeList(containerId, times) {
+      const el = document.getElementById(containerId);
+      const list = normalizeTimes(times);
+      el.innerHTML = "";
+      list.forEach(function (t) { addTimeRow(containerId, t); });
+      const addBtn = document.createElement("button");
+      addBtn.type = "button";
+      addBtn.className = "btn btn-outline btn-sm time-add";
+      addBtn.innerText = "+ เพิ่มรอบ";
+      addBtn.onclick = function () { addTimeRow(containerId, ""); };
+      el.appendChild(addBtn);
+    }
+
+    function addTimeRow(containerId, value) {
+      const el = document.getElementById(containerId);
+      const row = document.createElement("div");
+      row.className = "time-row";
+      row.style.cssText = "display:flex; gap:8px; align-items:center; margin-bottom:6px;";
+      const inp = document.createElement("input");
+      inp.type = "time";
+      inp.className = "form-input";
+      inp.style.maxWidth = "160px";
+      inp.value = value || "";
+      const del = document.createElement("button");
+      del.type = "button";
+      del.className = "btn btn-danger btn-sm";
+      del.innerText = "ลบ";
+      del.onclick = function () { row.parentNode.removeChild(row); };
+      row.appendChild(inp);
+      row.appendChild(del);
+      const addBtn = el.querySelector(".time-add");
+      if (addBtn) el.insertBefore(row, addBtn); else el.appendChild(row);
+      if (!value) inp.focus();
+    }
+
+    function readTimeList(containerId) {
+      const inputs = document.getElementById(containerId).querySelectorAll("input[type=time]");
+      const vals = [];
+      for (let i = 0; i < inputs.length; i++) vals.push(inputs[i].value);
+      return normalizeTimes(vals);
+    }
+
+    // ================== SETTINGS MODAL ==================
+    async function openSettingsModal() {
+      try {
+        const res = await authFetch("/api/settings");
+        if (!res.ok) throw new Error("โหลดการตั้งค่าไม่สำเร็จ");
+        const cfg = await res.json();
+        
+        document.getElementById("cfgLateTime").value = cfg.late_time || "07:30";
+        renderTimeList("cfgSendTimesList", cfg.send_times || ["09:05"]);
+        if (document.getElementById("cfgShowPresent")) {
+          document.getElementById("cfgShowPresent").checked = (cfg.show_present !== false);
+        }
+        if (document.getElementById("cfgTgShowPresent")) {
+          document.getElementById("cfgTgShowPresent").checked = (cfg.telegram_show_present !== false);
+        }
+        document.getElementById("cfgDbHost").value = cfg.db_host || "127.0.0.1";
+        document.getElementById("cfgDbPort").value = cfg.db_port || 1433;
+        document.getElementById("cfgDbName").value = cfg.db_name || "hiptime";
+        document.getElementById("cfgDbUser").value = cfg.db_user || "sa";
+        document.getElementById("cfgDbPass").value = cfg.db_password || "";
+        
+        const authSel = document.getElementById("cfgAuthType");
+        if (cfg.mock_mode) {
+          authSel.value = "mock";
+        } else if (cfg.db_auth === "windows") {
+          authSel.value = "windows";
+        } else {
+          authSel.value = "sql";
+        }
+        toggleAuthFields();
+        document.getElementById("testDbResult").style.display = "none";
+        document.getElementById("settingsModal").style.display = "flex";
+      } catch (e) {
+        showToast(e.message, false);
+      }
+    }
+
+    function closeSettingsModal() {
+      document.getElementById("settingsModal").style.display = "none";
+    }
+
+    function toggleAuthFields() {
+      const mode = document.getElementById("cfgAuthType").value;
+      const sqlFields = document.getElementById("sqlAuthFields");
+      sqlFields.style.display = (mode === "sql") ? "block" : "none";
+    }
+
+    async function testDbConnection() {
+      const resBox = document.getElementById("testDbResult");
+      resBox.style.display = "block";
+      resBox.innerHTML = '<span style="color: #38bdf8;">กำลังทดสอบเชื่อมต่อฐานข้อมูล...</span>';
+
+      const mode = document.getElementById("cfgAuthType").value;
+      const payload = {
+        db_host: document.getElementById("cfgDbHost").value.trim(),
+        db_port: parseInt(document.getElementById("cfgDbPort").value.trim()) || 1433,
+        db_name: document.getElementById("cfgDbName").value.trim(),
+        db_user: document.getElementById("cfgDbUser").value.trim(),
+        db_password: document.getElementById("cfgDbPass").value,
+        db_auth: mode === "mock" ? "sql" : mode,
+        mock_mode: mode === "mock",
+      };
+
+      try {
+        const res = await authFetch("/api/test-db", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(payload)
+        });
+        const data = await res.json();
+        if (data.ok) {
+          resBox.innerHTML = `
+            <div style="background: rgba(6,199,85,0.15); border: 1px solid rgba(6,199,85,0.4); color: #86efac; padding: 10px; border-radius: 6px;">
+              [สำเร็จ] <strong>${escapeHtml(data.message)}</strong><br>
+              ฐานข้อมูล: <code>${escapeHtml(data.database)}</code> | พนักงาน: <strong>${data.employee_count}</strong> คน
+            </div>
+          `;
+        } else {
+          resBox.innerHTML = `
+            <div style="background: rgba(239,68,68,0.15); border: 1px solid rgba(239,68,68,0.4); color: #fca5a5; padding: 10px; border-radius: 6px;">
+              [ไม่สำเร็จ] <strong>เชื่อมต่อไม่สำเร็จ:</strong> ${escapeHtml(data.error)}<br>
+              [คำแนะนำ] <strong>คำแนะนำ:</strong> ${escapeHtml(data.advice || "ตรวจสอบ IP และรหัสผ่าน")}
+            </div>
+          `;
+        }
+      } catch (e) {
+        resBox.innerHTML = `<span style="color: #f87171;">เกิดข้อผิดพลาดในการทดสอบ: ${escapeHtml(e.message)}</span>`;
+      }
+    }
+
+    async function handleSaveSettings(e) {
+      e.preventDefault();
+      const mode = document.getElementById("cfgAuthType").value;
+      const sendTimes = readTimeList("cfgSendTimesList");
+      if (sendTimes.length === 0) {
+        showToast("กรุณาระบุรอบส่งสรุปอย่างน้อย 1 รอบ", false);
+        return;
+      }
+
+      const payload = {
+        late_time: document.getElementById("cfgLateTime").value.trim(),
+        send_times: sendTimes,
+        show_present: document.getElementById("cfgShowPresent") ? document.getElementById("cfgShowPresent").checked : true,
+        telegram_show_present: document.getElementById("cfgTgShowPresent") ? document.getElementById("cfgTgShowPresent").checked : true,
+        db_host: document.getElementById("cfgDbHost").value.trim(),
+        db_port: parseInt(document.getElementById("cfgDbPort").value.trim()) || 1433,
+        db_name: document.getElementById("cfgDbName").value.trim(),
+        db_user: document.getElementById("cfgDbUser").value.trim(),
+        db_auth: mode === "mock" ? "sql" : mode,
+        mock_mode: mode === "mock",
+      };
+
+      const pass = document.getElementById("cfgDbPass").value;
+      if (pass) {
+        payload.db_password = pass;
+      }
+
+      try {
+        const res = await authFetch("/api/settings", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(payload)
+        });
+        const data = await res.json();
+        if (!data.ok) throw new Error("บันทึกไม่สำเร็จ");
+        showToast("บันทึกการตั้งค่าเรียบร้อยแล้ว!");
+        closeSettingsModal();
+        loadStatus();
+      } catch (err) {
+        showToast(err.message, false);
+      }
+    }
+
+    // ================== LINE CONNECTION MODAL ==================
+    async function syncWebhookNow() {
+      try {
+        showToast("กำลังซิงก์ Webhook URL เข้า LINE Developers...", true);
+        const res = await authFetch("/api/sync-webhook", { method: "POST" });
+        const data = await res.json();
+        if (!data.ok) throw new Error(data.error || "ซิงก์ไม่สำเร็จ");
+        showToast(data.message || "ซิงก์ Webhook URL สำเร็จ!");
+        loadStatus();
+      } catch (e) {
+        showToast("ซิงก์ไม่สำเร็จ: " + e.message, false);
+      }
+    }
+
+    async function openLineModal() {
+      try {
+        const res = await authFetch("/api/line-info");
+        const data = await res.json();
+
+        const host = window.location.origin;
+        const tun = data.tunnel || {};
+        const modalWh = document.getElementById("lineModalWebhook");
+        if (modalWh) modalWh.innerText = tun.webhook_url || data.webhook_endpoint || (host + "/webhook");
+
+        const tokInp = document.getElementById("cfgLineToken");
+        tokInp.value = "";
+        tokInp.placeholder = data.has_token
+          ? `ตั้งค่าไว้แล้ว (${data.token_preview || "พร้อมใช้งาน"}) — เว้นว่างหากไม่เปลี่ยน`
+          : "วาง Channel Access Token จาก LINE Developers Console";
+        document.getElementById("cfgLineSecret").value = "";
+        document.getElementById("cfgAutoAdd").checked = data.auto_add_recipients !== false;
+        document.getElementById("cfgWelcomeMsg").value = data.welcome_message || "";
+        document.getElementById("testLineResult").style.display = "none";
+
+        updateBotCard(data.bot_info, data.has_token, data.error);
+        document.getElementById("lineModal").style.display = "flex";
+      } catch (e) {
+        showToast("โหลดข้อมูล LINE ไม่สำเร็จ: " + e.message, false);
+      }
+    }
+
+    function closeLineModal() {
+      document.getElementById("lineModal").style.display = "none";
+    }
+
+    function toggleTokenVisibility(inputId, btn) {
+      const inp = document.getElementById(inputId);
+      if (inp.type === "password") {
+        inp.type = "text";
+        btn.innerText = "ซ่อน";
+      } else {
+        inp.type = "password";
+        btn.innerText = "แสดง";
+      }
+    }
+
+    function updateBotCard(info, hasToken, error) {
+      const nameEl = document.getElementById("lineBotName");
+      const badgeEl = document.getElementById("lineBotBadge");
+      const subEl = document.getElementById("lineBotSub");
+      const avatarEl = document.getElementById("lineBotAvatar");
+
+      if (info && info.displayName) {
+        nameEl.innerText = info.displayName;
+        badgeEl.innerText = "เชื่อมต่อแล้ว";
+        badgeEl.className = "badge-chip green";
+        subEl.innerText = `LINE ID: ${info.basicId || info.userId} | โหมด: ${info.chatMode || "bot"}`;
+        if (info.pictureUrl) {
+          avatarEl.innerHTML = `<img src="${escapeHtml(info.pictureUrl)}" style="width:100%; height:100%; object-fit:cover;">`;
+        }
+      } else if (hasToken) {
+        nameEl.innerText = "มี Token ในระบบ แต่ไม่สามารถเชื่อมต่อได้";
+        badgeEl.innerText = "เกิดข้อผิดพลาด";
+        badgeEl.className = "badge-chip red";
+        subEl.innerText = error ? `ข้อผิดพลาด: ${error}` : "Token อาจหมดอายุหรือไม่ถูกต้อง";
+      } else {
+        nameEl.innerText = "ยังไม่ได้เชื่อมต่อ LINE บอท";
+        badgeEl.innerText = "ยังไม่ได้เชื่อม";
+        badgeEl.className = "badge-chip orange";
+        subEl.innerText = "กรุณากรอก Channel Access Token ด้านล่างเพื่อเริ่มใช้งาน";
+      }
+    }
+
+    async function testLineToken() {
+      const token = document.getElementById("cfgLineToken").value.trim();
+      const secret = document.getElementById("cfgLineSecret").value.trim();
+      const resBox = document.getElementById("testLineResult");
+      resBox.style.display = "block";
+      resBox.innerHTML = '<span style="color: #38bdf8;">กำลังติดต่อ LINE Messaging API เพื่อตรวจสอบ Token...</span>';
+
+      try {
+        const res = await authFetch("/api/test-line-token", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ token, secret })
+        });
+        const data = await res.json();
+        if (data.ok && data.bot_info) {
+          updateBotCard(data.bot_info, true, "");
+          resBox.innerHTML = `
+            <div style="background: rgba(6,199,85,0.15); border: 1px solid rgba(6,199,85,0.4); color: #86efac; padding: 10px; border-radius: 6px;">
+              [สำเร็จ] <strong>เชื่อมต่อ LINE API สำเร็จ!</strong><br>
+              ชื่อบอท: <strong>${escapeHtml(data.bot_info.displayName)}</strong> (${escapeHtml(data.bot_info.basicId || "")})
+            </div>
+          `;
+        } else {
+          resBox.innerHTML = `
+            <div style="background: rgba(239,68,68,0.15); border: 1px solid rgba(239,68,68,0.4); color: #fca5a5; padding: 10px; border-radius: 6px;">
+              [ไม่สำเร็จ] <strong>เชื่อมต่อไม่สำเร็จ:</strong> ${escapeHtml(data.error || "Token ไม่ถูกต้อง")}<br>
+              [คำแนะนำ] <strong>คำแนะนำ:</strong> ตรวจสอบว่าคัดลอก Channel access token (long-lived) มาครบถ้วนหรือไม่
+            </div>
+          `;
+        }
+      } catch (e) {
+        resBox.innerHTML = `<span style="color: #f87171;">เกิดข้อผิดพลาด: ${escapeHtml(e.message)}</span>`;
+      }
+    }
+
+    async function handleSaveLineSettings(e) {
+      e.preventDefault();
+      const token = document.getElementById("cfgLineToken").value.trim();
+      const secret = document.getElementById("cfgLineSecret").value.trim();
+      const autoAdd = document.getElementById("cfgAutoAdd").checked;
+      const welcome = document.getElementById("cfgWelcomeMsg").value.trim();
+
+      const payload = {
+        auto_add_recipients: autoAdd,
+        welcome_message: welcome,
+      };
+      if (token) {
+        payload.line_channel_access_token = token;
+      }
+      if (secret) {
+        payload.line_channel_secret = secret;
+      }
+
+      try {
+        const res = await authFetch("/api/settings", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(payload)
+        });
+        const data = await res.json();
+        if (!data.ok) throw new Error("บันทึกไม่สำเร็จ");
+        showToast("บันทึกการเชื่อมต่อ LINE เรียบร้อยแล้ว!");
+        closeLineModal();
+        loadStatus();
+      } catch (err) {
+        showToast(err.message, false);
+      }
+    }
+
+    // ================== TELEGRAM MODAL & ACTIONS ==================
+    async function openTelegramModal() {
+      try {
+        const res = await authFetch("/api/telegram/info");
+        const data = await res.json();
+
+        const tokInp = document.getElementById("cfgTgToken");
+        tokInp.value = "";
+        if (data.has_token) {
+          tokInp.placeholder = data.is_token_from_env 
+            ? `ใช้จาก .env (${data.token_preview}) — วางใหม่เฉพาะเมื่อต้องการเปลี่ยน`
+            : `ตั้งค่าในเว็บแล้ว (${data.token_preview}) — เว้นว่างหากไม่เปลี่ยน`;
+        } else {
+          tokInp.placeholder = "วาง Token เช่น 123456:ABC-DEF...";
+        }
+
+        document.getElementById("cfgTgEnabled").checked = data.telegram_enabled !== false;
+        document.getElementById("cfgTgAutoAdd").checked = data.telegram_auto_add !== false;
+        document.getElementById("cfgTgRealtimeEnabled").checked = data.telegram_realtime_enabled !== false;
+        document.getElementById("cfgTgSummaryEnabled").checked = data.telegram_summary_enabled !== false;
+        const schedEl = document.getElementById("tgSharedScheduleDisplay");
+        if (schedEl) {
+          schedEl.innerText = (data.send_times || ["09:05"]).join(", ") + " น.";
+        }
+
+        updateTgBotCard(data.bot_info, data.has_token, data.error);
+        loadTgData();
+        document.getElementById("telegramModal").style.display = "flex";
+      } catch (e) {
+        showToast("โหลดข้อมูล Telegram ไม่สำเร็จ: " + e.message, false);
+      }
+    }
+
+    function closeTelegramModal() {
+      document.getElementById("telegramModal").style.display = "none";
+    }
+
+    function updateTgBotCard(info, hasToken, error) {
+      const nameEl = document.getElementById("tgBotName");
+      const badgeEl = document.getElementById("tgBotBadge");
+      const subEl = document.getElementById("tgBotSub");
+
+      if (info && (info.first_name || info.username)) {
+        nameEl.innerText = info.first_name + (info.username ? ` (@${info.username})` : '');
+        badgeEl.innerText = "เชื่อมต่อแล้ว";
+        badgeEl.className = "badge-chip green";
+        subEl.innerText = `Bot ID: ${info.id} | พร้อมใช้งาน`;
+      } else if (hasToken) {
+        nameEl.innerText = "มี Token แต่เชื่อมต่อ Telegram ไม่สำเร็จ";
+        badgeEl.innerText = "เกิดข้อผิดพลาด";
+        badgeEl.className = "badge-chip red";
+        subEl.innerText = error ? `ข้อผิดพลาด: ${error}` : "Token อาจไม่ถูกต้องหรือเครือข่ายบล็อก";
+      } else {
+        nameEl.innerText = "ยังไม่ได้ระบุ Token ของ Telegram Bot";
+        badgeEl.innerText = "ยังไม่ระบุ";
+        badgeEl.className = "badge-chip orange";
+        subEl.innerText = "กรุณากรอก Token ด้านล่าง หรือระบุในไฟล์ .env";
+      }
+    }
+
+    async function testTgToken() {
+      const token = document.getElementById("cfgTgToken").value.trim();
+      const resBox = document.getElementById("testTgResult");
+      resBox.style.display = "block";
+      resBox.innerHTML = '<span style="color: #38bdf8;">กำลังทดสอบเชื่อมต่อ Telegram Bot API...</span>';
+
+      try {
+        const res = await authFetch("/api/telegram/test-token", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ token })
+        });
+        const data = await res.json();
+        if (data.ok && data.bot_info) {
+          updateTgBotCard(data.bot_info, true, "");
+          resBox.innerHTML = `
+            <div style="background: rgba(6,199,85,0.15); border: 1px solid rgba(6,199,85,0.4); color: #86efac; padding: 10px; border-radius: 6px;">
+              [สำเร็จ] <strong>เชื่อมต่อ Telegram API สำเร็จ!</strong><br>
+              ชื่อบอท: <strong>${escapeHtml(data.bot_info.first_name)}</strong> (@${escapeHtml(data.bot_info.username || "")}) | ID: ${data.bot_info.id}
+            </div>
+          `;
+        } else {
+          resBox.innerHTML = `
+            <div style="background: rgba(239,68,68,0.15); border: 1px solid rgba(239,68,68,0.4); color: #fca5a5; padding: 10px; border-radius: 6px;">
+              [ไม่สำเร็จ] <strong>เชื่อมต่อไม่สำเร็จ:</strong> ${escapeHtml(data.error || "Token ไม่ถูกต้อง")}
+            </div>
+          `;
+        }
+      } catch (e) {
+        resBox.innerHTML = `<span style="color: #f87171;">เกิดข้อผิดพลาด: ${escapeHtml(e.message)}</span>`;
+      }
+    }
+
+    async function handleSaveTgSettings(e) {
+      e.preventDefault();
+      const token = document.getElementById("cfgTgToken").value.trim();
+      const enabled = document.getElementById("cfgTgEnabled").checked;
+      const autoAdd = document.getElementById("cfgTgAutoAdd").checked;
+      const rtEnabled = document.getElementById("cfgTgRealtimeEnabled").checked;
+      const sumEnabled = document.getElementById("cfgTgSummaryEnabled").checked;
+      const payload = {
+        telegram_enabled: enabled,
+        telegram_auto_add: autoAdd,
+        telegram_realtime_enabled: rtEnabled,
+        telegram_summary_enabled: sumEnabled,
+      };
+      if (token) {
+        payload.telegram_token = token;
+      }
+
+      try {
+        const res = await authFetch("/api/settings", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(payload)
+        });
+        const data = await res.json();
+        if (!data.ok) throw new Error("บันทึกไม่สำเร็จ");
+        showToast("บันทึกการตั้งค่า Telegram เรียบร้อยแล้ว!");
+        closeTelegramModal();
+        loadStatus();
+      } catch (err) {
+        showToast(err.message, false);
+      }
+    }
+
+    async function loadTgData() {
+      try {
+        const res = await authFetch("/api/telegram/recipients");
+        const data = await res.json();
+        renderTgRecipients(data.recipients || []);
+      } catch (e) {}
+    }
+
+    function renderTgRecipients(list) {
+      const el = document.getElementById("tgRecipientsList");
+      document.getElementById("tgRecCount").innerText = list.length;
+
+      if (!list || list.length === 0) {
+        el.innerHTML = '<div class="empty-state">ยังไม่มีผู้รับบน Telegram (เปิดบอทแล้วพิมพ์ /start เพื่อเริ่มรับข้อความ)</div>';
+        return;
+      }
+
+      el.innerHTML = list.map(r => {
+        return `
+          <div class="recipient-item" style="border-color: rgba(0, 136, 204, 0.3); margin-bottom: 8px;">
+            <div class="rec-info">
+              <div class="avatar" style="background:#0088cc; color:#fff;">TG</div>
+              <div class="rec-texts">
+                <div class="rec-name">
+                  ${escapeHtml(r.name || 'Chat')}
+                  ${r.username ? `<span style="font-size:0.75rem; color:#38bdf8;">@${escapeHtml(r.username)}</span>` : ''}
+                </div>
+                <div class="rec-id" onclick="copyId('${r.id}')" title="คลิกเพื่อคัดลอก Chat ID">ID: ${r.id} (${escapeHtml(r.type || 'private')})</div>
+              </div>
+            </div>
+            <div class="rec-actions" style="gap:10px;">
+              <div style="display:flex; flex-direction:column; gap:4px; font-size:0.75rem;">
+                <label style="display:flex; align-items:center; gap:4px; cursor:pointer;" title="รับการแจ้งเตือนสแกนนิ้ว Realtime">
+                  <input type="checkbox" ${r.realtime_on ? 'checked' : ''} onchange="toggleTgField(${r.id}, 'realtime', this.checked)">
+                  <span>Realtime</span>
+                </label>
+                <label style="display:flex; align-items:center; gap:4px; cursor:pointer;" title="รับรายงานสรุปประจำวัน">
+                  <input type="checkbox" ${r.summary_on ? 'checked' : ''} onchange="toggleTgField(${r.id}, 'summary', this.checked)">
+                  <span>สรุป</span>
+                </label>
+              </div>
+              <button class="btn btn-outline btn-sm" onclick="testSendTg(${r.id})" title="ส่งทดสอบหาคนนี้">ทดสอบ</button>
+              <button class="btn btn-danger btn-sm" onclick="deleteTgRecipient(${r.id})" title="ลบ">ลบ</button>
+            </div>
+          </div>
+        `;
+      }).join('');
+    }
+
+    async function toggleTgField(id, field, active) {
+      try {
+        const res = await authFetch("/api/telegram/recipients/toggle", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ id, field, active })
+        });
+        const data = await res.json();
+        if (!data.ok) throw new Error("เปลี่ยนสถานะไม่สำเร็จ");
+        showToast(`บันทึกสวิตช์ ${field} แล้ว`);
+        loadTgData();
+      } catch (e) {
+        showToast(e.message, false);
+      }
+    }
+
+    async function deleteTgRecipient(id) {
+      if (!confirm(`ต้องการลบผู้รับ Telegram ID ${id} ใช่หรือไม่?`)) return;
+      try {
+        const res = await authFetch("/api/telegram/recipients/delete", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ id })
+        });
+        const data = await res.json();
+        if (!data.ok) throw new Error("ลบไม่สำเร็จ");
+        showToast("ลบผู้รับ Telegram เรียบร้อยแล้ว");
+        loadTgData();
+      } catch (e) {
+        showToast(e.message, false);
+      }
+    }
+
+    async function testSendTg(id) {
+      try {
+        showToast("กำลังส่งข้อความทดสอบไปยัง Telegram...", true);
+        const res = await authFetch("/api/telegram/test-send", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ id })
+        });
+        const data = await res.json();
+        if (!data.ok) throw new Error(data.error || "ส่งไม่สำเร็จ");
+        showToast("ส่งข้อความทดสอบเข้า Telegram สำเร็จ!");
+      } catch (e) {
+        showToast(e.message, false);
+      }
+    }
+
+    async function sendTgSummaryNow() {
+      if (!confirm("ต้องการส่งรายงานสรุปการมาทำงานเข้า Telegram ตอนนี้ทันทีใช่หรือไม่?")) return;
+      try {
+        showToast("กำลังส่งสรุปเข้า Telegram...", true);
+        const res = await authFetch("/api/telegram/send-now", { method: "POST" });
+        const data = await res.json();
+        if (!data.ok) throw new Error(data.error || "ส่งไม่สำเร็จ");
+        showToast(data.message || "ส่งสรุปเข้า Telegram สำเร็จ!");
+      } catch (e) {
+        showToast(e.message, false);
+      }
+    }
+
+    checkAuth();
+    setInterval(loadStatus, 15000);
+  </script>
+
+</body>
+</html>

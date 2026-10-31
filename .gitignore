@@ -1,0 +1,42 @@
+# Environment variables & secrets (CRITICAL: NEVER COMMIT)
+.env
+.env.*
+*.env
+
+# Ignore internal docs, tasks, and all markdown files except README.md
+docs/
+tasks/
+*.md
+!README.md
+
+# Ignore pre-built release binaries directory
+release-windows7/
+dist/
+
+# Runtime persistent data, logs & reports
+data/
+logs/
+reports/
+go-stw/data/
+go-stw/logs/
+go-stw/reports/
+test_logs/
+test_reports/
+*.json.tmp
+*.log
+*.xlsx
+*.bak
+mydb.bak
+
+# Python cache & compiled files
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+
+# IDE & OS temporary files
+.DS_Store
+.idea/
+.vscode/
+Thumbs.db
+notes/

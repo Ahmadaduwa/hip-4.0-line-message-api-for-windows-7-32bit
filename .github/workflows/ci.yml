@@ -1,0 +1,57 @@
+name: CI Build & Test
+
+on:
+  push:
+    branches: [main, master]
+  pull_request:
+    branches: [main, master]
+
+jobs:
+  test:
+    name: Run Unit Tests
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Set up Go 1.20
+        uses: actions/setup-go@v5
+        with:
+          go-version: '1.20'
+          cache-dependency-path: go-stw/go.sum
+
+      - name: Run Tests
+        working-directory: go-stw
+        run: go test -v -race ./...
+
+  build-windows32:
+    name: Build Windows 7 (32-bit x86)
+    runs-on: ubuntu-latest
+    needs: test
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Set up Go 1.20
+        uses: actions/setup-go@v5
+        with:
+          go-version: '1.20'
+          cache-dependency-path: go-stw/go.sum
+
+      - name: Build STW_TeacherCheck (Console & Silent)
+        working-directory: go-stw
+        env:
+          GOOS: windows
+          GOARCH: 386
+        run: |
+          mkdir -p ../dist/reports ../dist/logs ../dist/data
+          go build -v -o ../dist/STW_TeacherCheck.exe .
+          go build -v -ldflags="-H windowsgui" -o ../dist/STW_TeacherCheck_Silent.exe .
+          cp -r ../release-windows7/*.bat ../dist/ 2>/dev/null || true
+          cp -r ../release-windows7/*.txt ../dist/ 2>/dev/null || true
+
+      - name: Upload Windows 7 32-bit Artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: windows7-32bit-executables
+          path: dist/
